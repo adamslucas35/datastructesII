@@ -5,6 +5,9 @@ from truck import Truck
 from csvLoader import loadPackageCSV
 from hasher import HashTable
 
+
+
+
 if __name__ == '__main__':
     # open tables
     # read distance data list
@@ -23,25 +26,20 @@ if __name__ == '__main__':
 
     loadPackageCSV("C950_ALUC167_DOCS/WGUPS_Package.csv", packageHashTable)
 
-    packagesForTruck1 = [7, 8, 9, 10, 11, 12, 17, 21, 22, 23, 24, 26]
-    packagesForTruck2 = [1, 3, 13, 14, 15, 16, 18, 19, 20, 29, 30, 31, 34, 36, 37, 38]
-    packagesForTruck3 = [2, 4, 5, 6, 25, 27, 28, 32, 33, 35, 39, 40]
+    packageIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+                  29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
 
-    # initiating trucks (addressData[0] = hub address "4001 South 700 East (84107)")
-    truck1 = Truck(1, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=10, minutes=20),
-                   packagesForTruck1, 0.0)
-    truck2 = Truck(2, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=8, minutes=0),
+    packagesForTruck1 = [13, 14, 15, 16, 19, 20, 29, 1, 30, 31, 40, 37, 34]
+    packagesForTruck2 = [3, 18, 36, 38, 28, 6, 32, 25, 27, 35, 2, 33, 8, 26]
+    packagesForTruck3 = [9, 7, 39, 11, 17, 12, 21, 4, 5, 23, 10, 22, 24]
+
+
+    # initiating trucks
+    truck1 = Truck(1, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=8), packagesForTruck1, 0.0)
+    truck2 = Truck(2, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=9, minutes=5),
                    packagesForTruck2, 0.0)
-    truck3 = Truck(3, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=9, minutes=5),
+    truck3 = Truck(3, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=10, minutes=20),
                    packagesForTruck3, 0.0)
-
-
-    # def distanceFinder(address1, address2):
-    #     distance = distanceData[address1][address2]
-    #     if distance == "":
-    #         distance = distanceData[address2][address1]
-    #     return distance
-    #
 
 
     def findDistance(index1, index2):
@@ -56,9 +54,14 @@ if __name__ == '__main__':
             if item[0] == address:
                 return i
 
-    point1 = (returnAddress(truck1.currentAddress))
-    point2 = (returnAddress("3595 Main St (84115)"))
-    print(findDistance(point1, point2))
+    def checkStatus(package, time):
+        if package.departure < time and time > package.delivered:
+            package.status = "DELIVERED"
+        elif time > package.departure and time < package.delivered:
+            package.status = "ON THE WAY"
+        else:
+            package.status = "HUB"
+
 
     def delivery(truckObject):
         undeliveredPackages = []
@@ -70,7 +73,6 @@ if __name__ == '__main__':
             nextAddress = 10000
             nextPackage = None
             for pack in undeliveredPackages:
-                packId = pack.id
                 packAddress = f"{pack.address} ({pack.zip})"
                 mileage = findDistance(returnAddress(truckObject.currentAddress), returnAddress(packAddress))
                 if mileage <= nextAddress:
@@ -78,21 +80,48 @@ if __name__ == '__main__':
                     nextPackage = pack
             truckObject.packages.append(nextPackage.id)
             undeliveredPackages.remove(nextPackage)
-            truckObject.mileage += mileage
+            truckObject.mileage += nextAddress
             nextCombinedAddress = f"{nextPackage.address} ({nextPackage.zip})"
             truckObject.currentAddress = nextCombinedAddress
-            truckObject.travelTime = datetime.timedelta(hours=nextAddress / truckObject.truckSpeed)
-            nextPackage.delivered = datetime.timedelta(hours=nextAddress / truckObject.truckSpeed)
-            nextPackage.departureTime = truckObject.departureTime
+            truckObject.travelTime += datetime.timedelta(hours=nextAddress / 18)
+            nextPackage.departure = truckObject.departureTime
+            nextPackage.delivered = truckObject.travelTime
+            print(nextPackage.departure, "-departure")
+            print(nextPackage.delivered, "-delivered")
 
-            print("Delivering Package:", nextPackage.id)
-            print("Current Address:", nextPackage.address)
-            print("Updated Truck Information:", truckObject)
-            nextPackage.checkStatus(nextPackage.delivered)
-            print(nextPackage)
-            print("---")
+            nextPackage.departure = truckObject.departureTime
+
+            # print("Delivering Package:", nextPackage.id)
+            # print("Current Address:", nextPackage.address)
+            # print("Updated Truck Information:", truckObject)
+            # print(nextPackage)
+            # print("---")
 
 
-    delivery(truck1)
-    delivery(truck2)
-    delivery(truck3)
+    def runProgram():
+        delivery(truck1)
+        delivery(truck2)
+        delivery(truck3)
+        print("WELCOME TO MY DELIVERY SYSTEM!")
+        print("-------------------------------")
+        print("TOTAL MILES TRAVELED: ", truck1.mileage + truck2.mileage + truck3.mileage)
+        print("-------------------------------")
+        time = input("Enter time in HH:MM format to see the status of all packages:\n")
+        try:
+            (hour, minute) = time.split(":")
+            inputTime = datetime.timedelta(hours=int(hour), minutes=int(minute))
+            for pId in range(1, 41):
+                packages = packageHashTable.get(str(pId))
+                checkStatus(packages, inputTime)
+                print(packages)
+            print("TOTAL MILES TRAVELED at inputted time: ", truck1.mileage + truck2.mileage + truck3.mileage)
+        except ValueError:
+            print("Incorrect, please run program again.")
+
+
+
+
+    runProgram()
+
+
+

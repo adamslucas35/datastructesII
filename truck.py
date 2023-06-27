@@ -12,4 +12,4 @@ class Truck:
         self.travelTime = departureTime
 
     def __str__(self):
-        return f"{self.id}, {self.currentAddress}, {self.packages}, {self.mileage}"
+        return f"{self.id}, {self.currentAddress}, {self.packages}, {self.mileage}, {self.travelTime}"
