@@ -37,12 +37,13 @@ if __name__ == '__main__':
     packagesForTruck1 = [13, 14, 15, 16, 19, 20, 29, 1, 30, 31, 40, 37, 34]
     packagesForTruck2 = [3, 18, 36, 38, 28, 6, 32, 25, 27, 35, 2, 33, 8, 26]
     packagesForTruck3 = [9, 7, 39, 11, 17, 12, 21, 4, 5, 23, 10, 22, 24]
+    hub = "4001 South 700 East (84107)"
 
     # initiating trucks
-    truck1 = Truck(1, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=8), packagesForTruck1, 0.0)
-    truck2 = Truck(2, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=9, minutes=5),
+    truck1 = Truck(1, 18, 16, None, hub, datetime.timedelta(hours=8), packagesForTruck1, 0.0)
+    truck2 = Truck(2, 18, 16, None, hub, datetime.timedelta(hours=9, minutes=5),
                    packagesForTruck2, 0.0)
-    truck3 = Truck(3, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=10, minutes=20),
+    truck3 = Truck(3, 18, 16, None, hub, datetime.timedelta(hours=10, minutes=20),
                    packagesForTruck3, 0.0)
 
     # function to return the distance between to points on distances table csv
@@ -103,6 +104,10 @@ if __name__ == '__main__':
             nextPackage.departure = truckObject.departureTime
             # set delivery time of package to state it has been delivered
             nextPackage.delivered = truckObject.travelTime
+        # returns the truck to the hub after delivery of all packages
+        returnHub = findDistance(returnAddress(truckObject.currentAddress), returnAddress(hub))
+        truckObject.mileage += returnHub
+        truckObject.currentAddress = hub
 
     # function that runs console interface
     def runProgram():
