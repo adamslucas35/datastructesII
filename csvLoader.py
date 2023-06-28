@@ -2,6 +2,8 @@ from package import Package
 import csv
 
 
+# takes the package csv file and inserts the data into the hashtable while also creating a package object for each
+# item sorted by index
 def loadPackageCSV(fileName, newHashTable):
     with open(fileName) as packageDestinations:
         packageInfo = csv.reader(packageDestinations, delimiter=',')
@@ -18,6 +20,3 @@ def loadPackageCSV(fileName, newHashTable):
 
             package = Package(packageId, address, deadline, city, zipcode, weight, status)
             newHashTable.insert(packageId, package)
-
-
-
