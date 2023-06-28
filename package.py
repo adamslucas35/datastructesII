@@ -1,6 +1,7 @@
 import datetime
 from truck import Truck
 
+
 class Package:
     def __init__(self, id, address, deadline, city, zip, weight, status):
         self.id = id

@@ -3,14 +3,12 @@ Adam S Lucas
 ID: 010241173
 """
 
-
 import csv
 import datetime
 
 from truck import Truck
 from csvLoader import loadPackageCSV
 from hasher import HashTable
-
 
 if __name__ == '__main__':
     # open tables
@@ -47,7 +45,6 @@ if __name__ == '__main__':
     truck3 = Truck(3, 18, 16, None, "4001 South 700 East (84107)", datetime.timedelta(hours=10, minutes=20),
                    packagesForTruck3, 0.0)
 
-
     # function to return the distance between to points on distances table csv
     def findDistance(index1, index2):
         distance = distanceData[index1][index2]
@@ -55,13 +52,11 @@ if __name__ == '__main__':
             distance = distanceData[index2][index1]
         return float(distance)
 
-
     # function to return index of string address format: "address (zip)"
     def returnAddress(address):
         for i, item in enumerate(addressData):
             if item[0] == address:
                 return i
-
 
     # function to update the status of the package, whether is has been delivered, on route, or at hub
     def checkStatus(package, time):
@@ -74,7 +69,6 @@ if __name__ == '__main__':
         # if package has not left the hub yet
         else:
             package.status = "HUB"
-
 
     # function to start movement of truck and deliver the package
     def delivery(truckObject):
@@ -110,13 +104,13 @@ if __name__ == '__main__':
             # set delivery time of package to state it has been delivered
             nextPackage.delivered = truckObject.travelTime
 
-
     # function that runs console interface
     def runProgram():
         # start deliveries
         delivery(truck1)
         delivery(truck2)
-        # truck 1 returns at 9:32, and truck3 does not leave until 10:20 so there are never more than 2 drivers out and about
+        # truck 1 returns at 9:32, and truck3 does not leave until 10:20 so there are never more than 2 drivers out
+        # and about
         delivery(truck3)
         print("WELCOME TO MY DELIVERY SYSTEM!")
         print("-------------------------------")
@@ -133,6 +127,11 @@ if __name__ == '__main__':
                 packages = packageHashTable.get(str(pId))
                 checkStatus(packages, inputTime)
                 print(packages)
+            # print distance traveled of each truck
+            print(f"TRUCK 1 traveled: {truck1.mileage} miles.")
+            print(f"TRUCK 2 traveled: {truck2.mileage} miles.")
+            print(f"TRUCK 3 traveled: {truck3.mileage} miles.")
+
         except ValueError:
             print("Incorrect, please run program again.")
 
