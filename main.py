@@ -81,25 +81,25 @@ if __name__ == '__main__':
         truckObject.packages.clear()
         # while packages are still on truck look for closest address based on loaded packages
         while len(undeliveredPackages) > 0:
-            nextAddress = 10000
+            closestPoint = 10000
             nextPackage = None
             for pack in undeliveredPackages:
                 packAddress = f"{pack.address} ({pack.zip})"
                 mileage = findDistance(returnAddress(truckObject.currentAddress), returnAddress(packAddress))
-                if mileage <= nextAddress:
-                    nextAddress = mileage
+                if mileage <= closestPoint:
+                    closestPoint = mileage
                     nextPackage = pack
             # add delivered packages to truck to keep track of what has been delivered prior
             truckObject.packages.append(nextPackage.id)
             # once delivered remove from undelivered array
             undeliveredPackages.remove(nextPackage)
             # add up the mileage
-            truckObject.mileage += nextAddress
+            truckObject.mileage += closestPoint
             # set up next address search
             nextCombinedAddress = f"{nextPackage.address} ({nextPackage.zip})"
             truckObject.currentAddress = nextCombinedAddress
             # set delivery time which is in constant increase once truck leaves hub
-            truckObject.travelTime += datetime.timedelta(hours=nextAddress / 18)
+            truckObject.travelTime += datetime.timedelta(hours=closestPoint / 18)
             # set departure of package to state it is on the way
             nextPackage.departure = truckObject.departureTime
             # set delivery time of package to state it has been delivered
@@ -128,7 +128,7 @@ if __name__ == '__main__':
         try:
             (hour, minute) = time.split(":")
             inputTime = datetime.timedelta(hours=int(hour), minutes=int(minute))
-            for pId in range(1, 41):
+            for pId in packageIds:
                 packages = packageHashTable.get(str(pId))
                 checkStatus(packages, inputTime)
                 print(packages)
