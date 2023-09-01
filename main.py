@@ -10,6 +10,9 @@ from truck import Truck
 from csvLoader import loadPackageCSV
 from hasher import HashTable
 
+
+
+
 if __name__ == '__main__':
     # open tables
     # read distance data list
